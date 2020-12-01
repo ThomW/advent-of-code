@@ -230,7 +230,7 @@ def partTwo(tgt_value):
       v2 = values[idx2]
       for idx3 in range(idx2 + 1, len(values)):
         v3 = values[idx3]
-        if v1 + v2 + v3 == 2020:
+        if v1 + v2 + v3 == tgt_value:
           print('{} + {} + {} = {}'.format(v1, v2, v3, v1+v2+v3))
           print('{} * {} * {} = {}'.format(v1, v2, v3, v1*v2*v3))
           return
