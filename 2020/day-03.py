@@ -25,7 +25,7 @@ def tree_counter(step_x, step_y):
 
 def part_two():
   
-  product = 0
+  product = 1
 
   # Walk the trees and display the counts
   for step in [[1,1],[3,1],[5,1],[7,1],[1,2]]:
@@ -33,10 +33,7 @@ def part_two():
     print('Part Two - Trees hit {} {}: {}'.format(step[0], step[1], count))
     
     # Accumulate the products of the counts
-    if product == 0:
-      product = count
-    else:
-      product *= count
+    product *= count
 
   print('Product of counts: {}'.format(product))  
 
