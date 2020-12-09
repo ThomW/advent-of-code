@@ -38,21 +38,15 @@ def part_one(data, preamble_size):
       return tgt
 
 def part_two(data, tgt):
-  for idx, val in enumerate(data):
-    idx_add = 1
-    while True:
-      current_set = data[idx:idx+idx_add]
+  for idx in range(0, len(data)):
+    for idx_add in range(1, len(data) - idx):
+      current_set = data[idx:idx + idx_add]
       sum_set = sum(current_set)
       # print('{}: {}'.format(sum_set, current_set))
       if sum_set == tgt:
         return min(current_set) + max(current_set)      
       elif sum_set > tgt:
         break
-      elif idx_add + idx > len(data):
-        break
-      else:
-        idx_add += 1
-
   return None
 
 # Read in file's contents as ints
