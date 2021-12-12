@@ -1,3 +1,5 @@
+from time import time
+
 example_1 = """start-A
 start-b
 A-c
@@ -77,39 +79,23 @@ def partTwo(data):
   
   nodes = process_input(data)
 
-  valid_paths = []
-  queue = [['start']]
+  num_valid_paths = 0
+  queue = [(['start'], False )]
   while len(queue) > 0:
     print(len(queue)) # This helped me keep my sanity as the script took a while to run
-    path = queue.pop(0)
+    path, visited_cave_twice = queue.pop(0)
     # print(path)
     for node in nodes[path[-1]]:
       if (node == 'end'):
-        valid_paths.append(path + [node])
+        num_valid_paths += 1
       elif node == 'start':
         pass
-      elif node.isupper():
-        queue.append(path + [node])
-      elif node not in path:
-        queue.append(path + [node])
-      else:
-        # Count the number of lowercase nodes in the path and make sure that we're not
-        # going to cause more than one lowercase node to be visited twice
-        lower_counts = {}
-        for n in path:
-          if n.islower():
-            if n in lower_counts.keys():
-              lower_counts[n] += 1
-            else:
-              lower_counts[n] = 1
-        if not 2 in lower_counts.values():
-          queue.append(path + [node])
+      elif node.isupper() or node not in path:
+        queue.append((path + [node], visited_cave_twice))
+      elif not visited_cave_twice: # We have a lowercase cave that's been visited once already
+        queue.append((path + [node], True))
 
-  # Print the valid paths in a format that matched the examples
-  #for vp in valid_paths:
-  #  print(','.join(vp))
-
-  return len(valid_paths)
+  return num_valid_paths
 
 # Import the data file into a list of lists of four elements reprenting x1,y1,x2,y2
 values = ''
@@ -125,4 +111,9 @@ print('Part 2 Example 1 (Target 36): {}'.format(partTwo(example_1)))
 print('Part 2 Example 2 (Target 103): {}'.format(partTwo(example_2)))
 print('Part 2 Example 3 (Target 3509): {}'.format(partTwo(example_3)))
 
+start = time()
 print('Problem 2 Solution: {}'.format(partTwo(values)))
+end = time()
+print(f'It took {end - start} seconds!')
+
+
