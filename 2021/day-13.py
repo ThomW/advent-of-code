@@ -1,5 +1,3 @@
-from time import time
-
 example = """6,10
 0,14
 9,10
@@ -24,8 +22,13 @@ fold along x=5
 """
 
 # Print dots to look like the puzzle examples for testing
-def print_dots(dots, papersize):
-  max_x, max_y = papersize
+def print_dots(dots):
+
+  max_x, max_y = 0, 0
+  for x, y in dots:
+    max_x = max(max_x, x)
+    max_y = max(max_y, y)
+
   print(f'{len(dots)} Dots:')
   for y in range(max_y + 1):
     for x in range(max_x + 1):
@@ -36,7 +39,7 @@ def print_dots(dots, papersize):
     print()
   print()
 
-# Break up the textblobs into dots and folds
+# Break up the input into dots and folds
 def process_input(data):
   dots = []
   folds = None
@@ -51,56 +54,37 @@ def process_input(data):
       folds.append((axis, int(value)))
   return dots, folds
 
-# Finds the overall dimensions of the coordinate system
-def get_max_xy(dots):
-  max_x, max_y = 0, 0
-  for x, y in dots:
-    max_x = max(max_x, x)
-    max_y = max(max_y, y)
-  return max_x, max_y
-
 # This does all the work involved in executing a fold
-def do_fold(dots, paper_size, fold):
+def do_fold(dots, fold):
   fold_direction, fold_idx = fold
-  paper_width, paper_height = paper_size
   
   new_dots = set() # Using a set to automatically dedupe dots once they're overlapping
 
   for x, y in dots:
     if fold_direction == 'y' and y > fold_idx:
-      new_dots.add((x, paper_height - y))
+      new_dots.add((x, fold_idx + fold_idx - y))
     elif fold_direction == 'y' and y == fold_idx:
       pass # Dots on the fold get lost
     elif fold_direction == 'x' and x > fold_idx:
-      new_dots.add((paper_width - x,  y))
+      new_dots.add((fold_idx + fold_idx - x,  y))
     elif fold_direction == 'x' and x == fold_idx:
       pass # Dots on the fold get lost
     else:
       new_dots.add((x, y))
 
-  # Update the dimensions of the paper
-  if fold_direction == 'y':
-    paper_height = paper_height - fold_idx - 1
-  elif fold_direction == 'x':
-    paper_width = paper_width - fold_idx - 1
+  return new_dots
 
-  return new_dots, (paper_width, paper_height)
-
-def partOne(data, max_folds = None, debug = False):
+def solve(data, max_folds = None, debug = False, print_resulting_dots=False):
   dots, folds = process_input(data)
 
-  # This is a lousy assumption, but they don't give us the paper size...
-  paper_size = get_max_xy(dots)
-
   if debug:
-    print_dots(dots, paper_size)
+    print_dots(dots)
 
   for fold in folds:
-
-    dots, paper_size = do_fold(dots, paper_size, fold)
+    dots = do_fold(dots, fold)
 
     if debug:
-      print_dots(dots, paper_size)
+      print_dots(dots)
 
     # Handle fold limiter
     if max_folds is not None:
@@ -108,10 +92,10 @@ def partOne(data, max_folds = None, debug = False):
       if max_folds == 0:
         break
 
-  return len(dots)
+  if print_resulting_dots:
+    print_dots(dots)
 
-def partTwo(data):
-  pass  
+  return len(dots)
 
 # Import the data file as just a text blob
 values = ''
@@ -119,12 +103,11 @@ with open ('day-13.txt', 'r') as f:
   values = f.read()
 
 # Do the complete example to test everything
-print('Part 1 Full Example: {}'.format(partOne(example, debug = True)))
+print('Part 1 Full Example: {}'.format(solve(example, debug = True)))
 
-print('Part 1 Example 1 (Target 17): {}'.format(partOne(example, max_folds = 1, debug = True)))
+print('Part 1 Example 1 (Target 17): {}'.format(solve(example, max_folds = 1, debug = True)))
 
-print('Problem 1 Solution: {}'.format(partOne(values, max_folds = 1)))
+print('Problem 1 Solution: {}'.format(solve(values, max_folds = 1)))
 
-#print('Part 2 Example 1 (Target ??): {}'.format(partTwo(example_1)))
-
-#print('Problem 2 Solution: {}'.format(partTwo(values)))
+print('Problem 2 Solution:')
+solve(values, print_resulting_dots=True)
